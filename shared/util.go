@@ -652,6 +652,14 @@ func IsTrue(value string) bool {
 	return StringInSlice(strings.ToLower(value), []string{"true", "1", "yes", "on"})
 }
 
+func IsNotBlank(value string) bool {
+	return !IsBlank(value)
+}
+
+func IsBlank(value string) bool {
+	return strings.TrimSpace(value) == ""
+}
+
 func IsUserConfig(key string) bool {
 	return strings.HasPrefix(key, "user.")
 }

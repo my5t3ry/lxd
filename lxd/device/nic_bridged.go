@@ -681,8 +681,10 @@ func (d *nicBridged) setFilters() (err error) {
 
 	// If parent bridge is unmanaged check that IP filtering isn't enabled.
 	if err == db.ErrNoSuchObject || n == nil {
-		if shared.IsTrue(d.config["security.ipv4_filtering"]) || shared.IsTrue(d.config["security.ipv6_filtering"]) {
-			return fmt.Errorf("IP filtering requires using a managed parent bridge")
+		if shared.IsTrue(d.config["security.ipv4_filtering"]) && shared.IsBlank(d.config["ipv4.address"]) && d.config["nictype"] != "bridged" ||
+			shared.IsTrue(d.config["security.ipv6_filtering"]) && shared.IsBlank(d.config["ipv6.address"]) && d.config["nictype"] != "bridged" {
+			return fmt.Errorf("IP filtering requires using a managed parent bridge, " +
+				" or using a unmanaged bridge with accordringly configured address config entries for each filter.")
 		}
 	}
 
