@@ -1055,7 +1055,7 @@ func (d Xtables) generateFilterIptablesRules(parentName string, hostName string,
 // not be part of the equality match. This allows delete commands to be generated from dumped add commands.
 func (d Xtables) matchEbtablesRule(activeRule []string, matchRule []string, deleteMode bool) bool {
 	for i := range matchRule {
-		// Active rules will be dumped in "add" format, we need to detect
+		// Active rules will be dumped c "add" format, we need to detect
 		// this and switch it to "delete" mode if requested. If this has already been
 		// done then move on, as we don't want to break the comparison below.
 		if deleteMode && (activeRule[i] == "-A" || activeRule[i] == "-D") {
@@ -1099,8 +1099,9 @@ func (d Xtables) iptablesAdd(ipVersion uint, comment string, table string, metho
 
 	args := append(baseArgs, []string{method, chain}...)
 	args = append(args, rule...)
-	args = append(args, "-m", "comment", "--comment", fmt.Sprintf("generated for %s", comment))
-
+	if cmd != "ip6tables" && (args[len(args)-1] != "DROP" && args[len(args)-1] != "ACCEPT") {
+		args = append(args, "-m", "comment", "--comment", fmt.Sprintf("generated for %s", comment))
+	}
 	_, err = shared.TryRunCommand(cmd, args...)
 	if err != nil {
 		return err
